@@ -21,9 +21,9 @@ import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
-REQUIREMENTS = ['sonyapilib==0.4.1']
+REQUIREMENTS = ['sonyapilib==0.4.2']
 
 SONY_CONFIG_FILE = 'sony.conf'
 
@@ -34,6 +34,15 @@ DEFAULT_NAME = 'Sony Media Player'
 NICKNAME = 'Home Assistant'
 
 CONF_BROADCAST_ADDRESS = 'broadcast_address'
+CONF_APP_PORT = 'app_port'
+CONF_DMR_PORT = 'dmr_port'
+CONF_IRCC_PORT = 'ircc_port'
+CONF_PSK = 'psk'
+
+DEFAULT_APP_PORT = 50202
+DEFAULT_DMR_PORT = 52323
+DEFAULT_IRCC_PORT = 50001
+
 
 # Map ip to request id for configuring
 _CONFIGURING = {}
@@ -41,15 +50,19 @@ _CONFIGURING = {}
 _LOGGER = logging.getLogger(__name__)
 
 SUPPORT_SONY = SUPPORT_PAUSE | \
-                SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
-                SUPPORT_TURN_ON | SUPPORT_TURN_OFF | \
-                SUPPORT_PLAY | SUPPORT_PLAY_MEDIA | SUPPORT_STOP | \
-                SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP
+    SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
+    SUPPORT_TURN_ON | SUPPORT_TURN_OFF | \
+    SUPPORT_PLAY | SUPPORT_PLAY_MEDIA | SUPPORT_STOP | \
+    SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_NAME, default=DEFAULT_NAME): cv.string,
     vol.Optional(CONF_BROADCAST_ADDRESS): cv.string,
+    vol.Optional(CONF_APP_PORT, default=DEFAULT_APP_PORT): cv.port,
+    vol.Optional(CONF_DMR_PORT, default=DEFAULT_DMR_PORT): cv.port,
+    vol.Optional(CONF_IRCC_PORT, default=DEFAULT_IRCC_PORT): cv.port,
+    vol.Optional(CONF_PSK, default=None): cv.string,
 })
 
 
@@ -108,6 +121,10 @@ def request_configuration(config, hass, add_devices):
     """Request configuration steps from the user."""
     host = config.get(CONF_HOST)
     name = config.get(CONF_NAME)
+    app_port = config.get(CONF_APP_PORT)
+    dmr_port = config.get(CONF_DMR_PORT)
+    ircc_port = config.get(CONF_IRCC_PORT)
+    psk = config.get(CONF_PSK)
 
     configurator = hass.components.configurator
 
@@ -122,7 +139,9 @@ def request_configuration(config, hass, add_devices):
         from sonyapilib.device import SonyDevice, AuthenticationResult
 
         pin = data.get('pin')
-        sony_device = SonyDevice(host, name)
+        sony_device = SonyDevice(host, name,
+                                 psk=psk, app_port=app_port,
+                                 dmr_port=dmr_port, ircc_port=ircc_port)
 
         authenticated = False
 
@@ -146,8 +165,8 @@ def request_configuration(config, hass, add_devices):
 
     _CONFIGURING[host] = configurator.request_config(
         name, sony_configuration_callback,
-        description='Enter the Pin shown on your Sony Device. ' +
-        'If no Pin is shown, enter 0000 ' +
+        description='Enter the Pin shown on your Sony Device. '
+        'If no Pin is shown, enter 0000 '
         'to let the device show you a Pin.',
         description_image="/static/images/smart-tv.png",
         submit_caption="Confirm",
