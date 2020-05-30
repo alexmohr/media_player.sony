@@ -129,7 +129,7 @@ def request_configuration(config, hass, add_devices):
     psk = None
     try:
         psk = config.get(CONF_PSK)
-    except:
+    except Exception:
         pass
 
     configurator = hass.components.configurator
