@@ -21,9 +21,9 @@ import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
 
-VERSION = '0.1.2'
+VERSION = '0.1.3'
 
-REQUIREMENTS = ['sonyapilib==0.4.2']
+REQUIREMENTS = ['sonyapilib==0.4.3']
 
 SONY_CONFIG_FILE = 'sony.conf'
 
@@ -110,9 +110,11 @@ def setup_sonymediaplayer(config, sony_device, hass, add_devices):
         hass_device = SonyMediaPlayerDevice(sony_device)
 
         # Save config, we need the mac address to support wake on LAN
+        sony_config = load_json(hass.config.path(SONY_CONFIG_FILE))
+        sony_config.pushitem({host: {
+            'device': hass_device.sonydevice.save_to_json()}})
         save_json(
-            hass.config.path(SONY_CONFIG_FILE), {host: {
-                'device': hass_device.sonydevice.save_to_json()}})
+            hass.config.path(SONY_CONFIG_FILE), sony_config)
 
         add_devices([hass_device])
 
@@ -124,7 +126,11 @@ def request_configuration(config, hass, add_devices):
     app_port = config.get(CONF_APP_PORT)
     dmr_port = config.get(CONF_DMR_PORT)
     ircc_port = config.get(CONF_IRCC_PORT)
-    psk = config.get(CONF_PSK)
+    psk = None
+    try:
+        psk = config.get(CONF_PSK)
+    except Exception:
+        pass
 
     configurator = hass.components.configurator
 
