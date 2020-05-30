@@ -126,7 +126,11 @@ def request_configuration(config, hass, add_devices):
     app_port = config.get(CONF_APP_PORT)
     dmr_port = config.get(CONF_DMR_PORT)
     ircc_port = config.get(CONF_IRCC_PORT)
-    psk = config.get(CONF_PSK)
+    psk = None
+    try:
+        psk = config.get(CONF_PSK)
+    except:
+        pass
 
     configurator = hass.components.configurator
 
