@@ -86,6 +86,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     setup_sonymediaplayer(config, pin, hass, add_devices)
 
+
 def setup_sonymediaplayer(config, sony_device, hass, add_devices):
     """Set up a Sony Media Player based on host parameter."""
     host = config.get(CONF_HOST)
@@ -123,7 +124,6 @@ def request_configuration(config, hass, add_devices):
     dmr_port = config.get(CONF_DMR_PORT)
     ircc_port = config.get(CONF_IRCC_PORT)
     psk = None
-    
 
     configurator = hass.components.configurator
 
