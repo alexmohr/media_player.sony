@@ -14,7 +14,10 @@ media_player:
   - platform: sony
     host: 192.168.0.10
 
-group: !include groups.yaml
-automation: !include automations.yaml
-script: !include scripts.yaml
-scene: !include scenes.yaml
+group: 
+
+automation:
+
+script: 
+
+scene:

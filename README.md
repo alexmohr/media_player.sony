@@ -46,7 +46,6 @@ Key | Description
 **app_port (Optional)** | The app port, defaults to 50202,
 **dmr_port (Optional)** | The dmr port, defaults to 52323,
 **ircc_port (Optional)** | The ircc port, defaults to 50001
-**psk (Optional)** | Pre shared password 
 
 ### Devices
 Devices listed here configure the ports different. This list is not complete. If you devices does work with other ports please add it via a PR
