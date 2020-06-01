@@ -114,8 +114,6 @@ def setup_sonymediaplayer(config, sony_device, hass, add_devices):
 
         add_devices([hass_device])
 
-
-
 def request_configuration(config, hass, add_devices):
     """Request configuration steps from the user."""
     host = config.get(CONF_HOST)
