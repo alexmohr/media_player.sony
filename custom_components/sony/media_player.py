@@ -134,7 +134,7 @@ def request_configuration(config, hass, add_devices):
 
     def sony_configuration_callback(data):
         """Handle the entry of user PIN."""
-        from sonyapilib.device import SonyDevice, AuthenticationResult
+        from sonyapilib.device import AuthenticationResult
 
         pin = data.get('pin')
         sony_device = SonyDevice(host, name,
