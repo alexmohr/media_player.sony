@@ -5,6 +5,8 @@ For more details about this platform, please refer to the documentation at
 https://github.com/dilruacs/media_player.sony
 """
 import logging
+from sonyapilib.device import SonyDevice
+
 import voluptuous as vol
 
 from homeassistant.components.media_player import (
@@ -20,7 +22,7 @@ from homeassistant.const import (
 import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
-from sonyapilib.device import SonyDevice
+
 
 VERSION = '0.1.3'
 
@@ -90,7 +92,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 def setup_sonymediaplayer(config, sony_device, hass, add_devices):
     """Set up a Sony Media Player based on host parameter."""
     host = config.get(CONF_HOST)
-    name = config.get(CONF_NAME)
     broadcast = config.get(CONF_BROADCAST_ADDRESS)
 
     if sony_device is None:
