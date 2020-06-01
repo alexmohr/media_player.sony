@@ -20,6 +20,7 @@ from homeassistant.const import (
 import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
+from sonyapilib.device import SonyDevice
 
 VERSION = '0.1.3'
 
@@ -73,13 +74,12 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     pin = None
     sony_config = load_json(hass.config.path(SONY_CONFIG_FILE))
-    from sonyapilib.device import SonyDevice
 
     while sony_config:
         # Set up a configured TV
         host_ip, host_config = sony_config.popitem()
         if host_ip == host:
-            device = SonyDevice.load_from_json(host_config['device'])
+            device = SonyDevice.load_from_json(host_config)
             hass_device = SonyMediaPlayerEntity(device)
             add_devices([hass_device])
             return
@@ -90,6 +90,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 def setup_sonymediaplayer(config, sony_device, hass, add_devices):
     """Set up a Sony Media Player based on host parameter."""
     host = config.get(CONF_HOST)
+    name = config.get(CONF_NAME)
     broadcast = config.get(CONF_BROADCAST_ADDRESS)
 
     if sony_device is None:
@@ -104,16 +105,15 @@ def setup_sonymediaplayer(config, sony_device, hass, add_devices):
 
         if broadcast:
             sony_device.broadcast = broadcast
+
         hass_device = SonyMediaPlayerEntity(sony_device)
+        config[host] = hass_device.sonydevice.save_to_json()
 
         # Save config, we need the mac address to support wake on LAN
-        sony_config = load_json(hass.config.path(SONY_CONFIG_FILE))
-        sony_config.pushitem({host: {
-            'device': hass_device.sonydevice.save_to_json()}})
-        save_json(
-            hass.config.path(SONY_CONFIG_FILE), sony_config)
+        save_json(hass.config.path(SONY_CONFIG_FILE), config)
 
         add_devices([hass_device])
+
 
 
 def request_configuration(config, hass, add_devices):
