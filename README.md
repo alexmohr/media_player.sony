@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/alexmohr/media_player.sony.svg?branch=master)](https://travis-ci.org/alexmohr/media_player.sony)
-
+[![Build Status](https://travis-ci.com/alexmohr/media_player.sony.svg?branch=master)](https://travis-ci.com/alexmohr/media_player.sony)
 # media_player.sony
 
 ## Important!
@@ -43,7 +42,17 @@ Key | Description
 **platform (Required)** | The platform name (`sony`)
 **host (Required)** | IP Address or hostname of the device
 **name (Required)** | Descriptive name for the device
-**broadcast (optional)** | The broadcast ip of the subnet
+**broadcast (Optional)** | The broadcast ip of the subnet
+**app_port (Optional)** | The app port, defaults to 50202,
+**dmr_port (Optional)** | The dmr port, defaults to 52323,
+**ircc_port (Optional)** | The ircc port, defaults to 50001
+
+### Devices
+Devices listed here configure the ports different. This list is not complete. If you devices does work with other ports please add it via a PR
+
+Device | App Port | Dmr Port | Ircc
+:--- | : ---
+BDP-S590 | 52323 | 50202 | 52323
 
 ## Pair a device
 

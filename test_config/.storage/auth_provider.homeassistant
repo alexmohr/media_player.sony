@@ -1,0 +1,12 @@
+{
+    "data": {
+        "users": [
+            {
+                "password": "JDJiJDEyJHZmeEtNUGFvTHZZbS9WNXRWMUFoT2V2amVxSmZGa2tIQUtYSzRUbHVjY3NhZ0F2d1NyVkxX",
+                "username": "meme"
+            }
+        ]
+    },
+    "key": "auth_provider.homeassistant",
+    "version": 1
+}

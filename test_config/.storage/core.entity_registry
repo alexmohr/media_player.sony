@@ -1,0 +1,56 @@
+{
+    "data": {
+        "entities": [
+            {
+                "capabilities": {},
+                "config_entry_id": null,
+                "device_class": null,
+                "device_id": null,
+                "disabled_by": null,
+                "entity_id": "person.me",
+                "icon": null,
+                "name": null,
+                "original_icon": null,
+                "original_name": "me",
+                "platform": "person",
+                "supported_features": 0,
+                "unique_id": "me",
+                "unit_of_measurement": null
+            },
+            {
+                "capabilities": {},
+                "config_entry_id": "0c28110123fc4749b9fff69cf162246d",
+                "device_class": null,
+                "device_id": null,
+                "disabled_by": null,
+                "entity_id": "weather.home",
+                "icon": null,
+                "name": null,
+                "original_icon": null,
+                "original_name": "Home",
+                "platform": "met",
+                "supported_features": 0,
+                "unique_id": "home",
+                "unit_of_measurement": null
+            },
+            {
+                "capabilities": null,
+                "config_entry_id": null,
+                "device_class": null,
+                "device_id": null,
+                "disabled_by": null,
+                "entity_id": "binary_sensor.updater",
+                "icon": null,
+                "name": null,
+                "original_icon": null,
+                "original_name": "Updater",
+                "platform": "updater",
+                "supported_features": 0,
+                "unique_id": "updater",
+                "unit_of_measurement": null
+            }
+        ]
+    },
+    "key": "core.entity_registry",
+    "version": 1
+}

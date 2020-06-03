@@ -5,10 +5,12 @@ For more details about this platform, please refer to the documentation at
 https://github.com/dilruacs/media_player.sony
 """
 import logging
+from sonyapilib.device import SonyDevice
+
 import voluptuous as vol
 
 from homeassistant.components.media_player import (
-    MediaPlayerDevice, PLATFORM_SCHEMA)
+    MediaPlayerEntity, PLATFORM_SCHEMA)
 
 from homeassistant.components.media_player.const import (
     SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK, SUPPORT_TURN_ON,
@@ -21,9 +23,10 @@ import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
 
-VERSION = '0.1.1'
 
-REQUIREMENTS = ['sonyapilib==0.4.1']
+VERSION = '0.1.3'
+
+REQUIREMENTS = ['sonyapilib==0.4.3']
 
 SONY_CONFIG_FILE = 'sony.conf'
 
@@ -34,6 +37,13 @@ DEFAULT_NAME = 'Sony Media Player'
 NICKNAME = 'Home Assistant'
 
 CONF_BROADCAST_ADDRESS = 'broadcast_address'
+CONF_APP_PORT = 'app_port'
+CONF_DMR_PORT = 'dmr_port'
+CONF_IRCC_PORT = 'ircc_port'
+DEFAULT_APP_PORT = 50202
+DEFAULT_DMR_PORT = 52323
+DEFAULT_IRCC_PORT = 50001
+
 
 # Map ip to request id for configuring
 _CONFIGURING = {}
@@ -41,15 +51,18 @@ _CONFIGURING = {}
 _LOGGER = logging.getLogger(__name__)
 
 SUPPORT_SONY = SUPPORT_PAUSE | \
-                SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
-                SUPPORT_TURN_ON | SUPPORT_TURN_OFF | \
-                SUPPORT_PLAY | SUPPORT_PLAY_MEDIA | SUPPORT_STOP | \
-                SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP
+    SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
+    SUPPORT_TURN_ON | SUPPORT_TURN_OFF | \
+    SUPPORT_PLAY | SUPPORT_PLAY_MEDIA | SUPPORT_STOP | \
+    SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_NAME, default=DEFAULT_NAME): cv.string,
     vol.Optional(CONF_BROADCAST_ADDRESS): cv.string,
+    vol.Optional(CONF_APP_PORT, default=DEFAULT_APP_PORT): cv.port,
+    vol.Optional(CONF_DMR_PORT, default=DEFAULT_DMR_PORT): cv.port,
+    vol.Optional(CONF_IRCC_PORT, default=DEFAULT_IRCC_PORT): cv.port
 })
 
 
@@ -63,14 +76,13 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     pin = None
     sony_config = load_json(hass.config.path(SONY_CONFIG_FILE))
-    from sonyapilib.device import SonyDevice
 
     while sony_config:
         # Set up a configured TV
         host_ip, host_config = sony_config.popitem()
         if host_ip == host:
-            device = SonyDevice.load_from_json(host_config['device'])
-            hass_device = SonyMediaPlayerDevice(device)
+            device = SonyDevice.load_from_json(host_config)
+            hass_device = SonyMediaPlayerEntity(device)
             add_devices([hass_device])
             return
 
@@ -94,12 +106,12 @@ def setup_sonymediaplayer(config, sony_device, hass, add_devices):
 
         if broadcast:
             sony_device.broadcast = broadcast
-        hass_device = SonyMediaPlayerDevice(sony_device)
+
+        hass_device = SonyMediaPlayerEntity(sony_device)
+        config[host] = hass_device.sonydevice.save_to_json()
 
         # Save config, we need the mac address to support wake on LAN
-        save_json(
-            hass.config.path(SONY_CONFIG_FILE), {host: {
-                'device': hass_device.sonydevice.save_to_json()}})
+        save_json(hass.config.path(SONY_CONFIG_FILE), config)
 
         add_devices([hass_device])
 
@@ -108,6 +120,10 @@ def request_configuration(config, hass, add_devices):
     """Request configuration steps from the user."""
     host = config.get(CONF_HOST)
     name = config.get(CONF_NAME)
+    app_port = config.get(CONF_APP_PORT)
+    dmr_port = config.get(CONF_DMR_PORT)
+    ircc_port = config.get(CONF_IRCC_PORT)
+    psk = None
 
     configurator = hass.components.configurator
 
@@ -119,10 +135,12 @@ def request_configuration(config, hass, add_devices):
 
     def sony_configuration_callback(data):
         """Handle the entry of user PIN."""
-        from sonyapilib.device import SonyDevice, AuthenticationResult
+        from sonyapilib.device import AuthenticationResult
 
         pin = data.get('pin')
-        sony_device = SonyDevice(host, name)
+        sony_device = SonyDevice(host, name,
+                                 psk=psk, app_port=app_port,
+                                 dmr_port=dmr_port, ircc_port=ircc_port)
 
         authenticated = False
 
@@ -146,8 +164,8 @@ def request_configuration(config, hass, add_devices):
 
     _CONFIGURING[host] = configurator.request_config(
         name, sony_configuration_callback,
-        description='Enter the Pin shown on your Sony Device. ' +
-        'If no Pin is shown, enter 0000 ' +
+        description='Enter the Pin shown on your Sony Device. '
+        'If no Pin is shown, enter 0000 '
         'to let the device show you a Pin.',
         description_image="/static/images/smart-tv.png",
         submit_caption="Confirm",
@@ -155,7 +173,7 @@ def request_configuration(config, hass, add_devices):
     )
 
 
-class SonyMediaPlayerDevice(MediaPlayerDevice):
+class SonyMediaPlayerEntity(MediaPlayerEntity):
     # pylint: disable=too-many-instance-attributes
     """Representation of a Sony mediaplayer."""
 
