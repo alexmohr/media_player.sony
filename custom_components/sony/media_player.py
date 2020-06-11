@@ -198,6 +198,7 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
 
     def update(self):
         """Update TV info."""
+        self.sonydevice.init_device()
         if not self.sonydevice.get_power_status():
             self._state = STATE_OFF
             return
