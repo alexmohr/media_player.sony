@@ -5,6 +5,8 @@ For more details about this platform, please refer to the documentation at
 https://github.com/dilruacs/media_player.sony
 """
 import logging
+import time
+
 from sonyapilib.device import SonyDevice
 
 import voluptuous as vol
@@ -185,6 +187,7 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
         """
         self.sonydevice = sony_device
         self._state = STATE_OFF
+        self._attr_volume_level = 0
         self._muted = False
         self._id = None
         self._playing = False
@@ -210,6 +213,7 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
             if self._state == STATE_ON:
                 power_status = self.sonydevice.get_power_status()
                 if power_status:
+                    self.update_volume()
                     playback_info = self.sonydevice.get_playing_status()
                     if playback_info == "PLAYING":
                         self._state = STATE_PLAYING
@@ -223,6 +227,10 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
         except Exception as exception_instance:  # pylint: disable=broad-except
             _LOGGER.error(exception_instance)
             self._state = STATE_OFF
+
+    def update_volume(self):
+        self._attr_volume_level = self.sonydevice.get_volume()
+        _LOGGER.error(self._attr_volume_level)
 
     @property
     def name(self):
@@ -297,10 +305,14 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
     def volume_up(self):
         """Send stop command."""
         self.sonydevice.volume_up()
+        time.sleep(0.5)
+        self.update_volume()
 
     def volume_down(self):
         """Send stop command."""
         self.sonydevice.volume_down()
+        time.sleep(0.5)
+        self.update_volume()
 
     def mute_volume(self, mute):
         """Send stop command."""
