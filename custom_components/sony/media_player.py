@@ -230,7 +230,7 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
 
     def update_volume(self):
         self._attr_volume_level = self.sonydevice.get_volume()
-        _LOGGER.error(self._attr_volume_level)
+        _LOGGER.debug(self._attr_volume_level)
 
     @property
     def name(self):
