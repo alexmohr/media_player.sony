@@ -9,8 +9,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from sonyapilib.device import SonyDevice, AuthenticationResult
 
-from .const import DOMAIN, CONF_NAME, CONF_HOST, CONF_BROADCAST_ADDRESS, CONF_APP_PORT, CONF_IRCC_PORT, CONF_DMR_PORT, \
-    SONY_COORDINATOR, SONY_API, DEFAULT_DEVICE_NAME
+from .const import (DOMAIN,
+                    CONF_NAME, CONF_HOST, CONF_PIN, CONF_MAC_ADDRESS, CONF_BROADCAST_ADDRESS, CONF_APP_PORT, CONF_IRCC_PORT, CONF_DMR_PORT,
+                    SONY_COORDINATOR, SONY_API, DEFAULT_DEVICE_NAME, SONY_DEFAULT_DEVICE_NAME)
 from .coordinator import SonyCoordinator
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -25,12 +26,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Unfolded Circle Remote from a config entry."""
 
     try:
-        sony_device = SonyDevice(entry.data[CONF_HOST], DEFAULT_DEVICE_NAME,
+        sony_device = SonyDevice(entry.data[CONF_HOST], SONY_DEFAULT_DEVICE_NAME,
                                  psk=None, app_port=entry.data[CONF_APP_PORT],
                                  dmr_port=entry.data[CONF_DMR_PORT], ircc_port=entry.data[CONF_IRCC_PORT])
-        pin = entry.data.get('pin', None)
+        pin = entry.data.get(CONF_PIN, None)
         sony_device.pin = pin
-        sony_device.mac = entry.data.get('mac_address', None)
+        sony_device.mac = entry.data.get(CONF_MAC_ADDRESS, None)
+        sony_device.broadcast = entry.data.get(CONF_BROADCAST_ADDRESS, None)
 
         if pin is None or pin == '0000' or pin is None or pin == '':
             register_result = await hass.async_add_executor_job(sony_device.register)
@@ -76,7 +78,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     try:
-        coordinator: SonyCoordinator = hass.data[DOMAIN][entry.entry_id][SONY_COORDINATOR]
+        pass
+        # coordinator: SonyCoordinator = hass.data[DOMAIN][entry.entry_id][SONY_COORDINATOR]
         # coordinator.api.?
     except Exception as ex:
         _LOGGER.error("Sony device async_unload_entry error", ex)

@@ -8,9 +8,11 @@ DEVICE_SCAN_INTERVAL = timedelta(seconds=5)  # TODO: Add to config
 SONY_COORDINATOR = "sony_coordinator"
 SONY_API = "sony_api"
 DEFAULT_DEVICE_NAME = "Sony Device"
+SONY_DEFAULT_DEVICE_NAME = "HomeAssistant"
 
 CONF_HOST = "host"
 CONF_PIN = "pin"
+CONF_MAC_ADDRESS = "mac_address"
 CONF_BROADCAST_ADDRESS = "broadcast_address"
 CONF_APP_PORT = 'app_port'
 CONF_DMR_PORT = 'dmr_port'

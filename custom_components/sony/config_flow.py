@@ -6,18 +6,22 @@ from typing import Any
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
-from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT
+from homeassistant.const import CONF_HOST  # , CONF_NAME, CONF_PORT
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 from sonyapilib.device import SonyDevice, AuthenticationResult
 
-from .const import DOMAIN, CONF_APP_PORT, DEFAULT_APP_PORT, CONF_DMR_PORT, DEFAULT_DMR_PORT, \
-    CONF_IRCC_PORT, DEFAULT_IRCC_PORT, CONF_PIN, DEFAULT_DEVICE_NAME
+from .const import (DOMAIN, DEFAULT_DEVICE_NAME,
+                    CONF_HOST, CONF_PIN,  # CONF_MAC_ADDRESS, CONF_BROADCAST_ADDRESS,
+                    CONF_APP_PORT, DEFAULT_APP_PORT, CONF_DMR_PORT,
+                    DEFAULT_DMR_PORT, CONF_IRCC_PORT, DEFAULT_IRCC_PORT)
 
 _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema({vol.Required(CONF_HOST): str,
                                     vol.Optional(CONF_PIN, default="0000"): str,
+                                    # vol.Optional(CONF_MAC_ADDRESS): str,
+                                    # vol.Optional(CONF_BROADCAST_ADDRESS): str,
                                     vol.Optional(CONF_APP_PORT, default=DEFAULT_APP_PORT): int,
                                     vol.Optional(CONF_DMR_PORT, default=DEFAULT_DMR_PORT): int,
                                     vol.Optional(CONF_IRCC_PORT, default=DEFAULT_IRCC_PORT): int})
@@ -30,7 +34,7 @@ def validate_input(user_input: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect.
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
-    errors = {}
+    # errors = {}
     pin = user_input.get('pin')
     _LOGGER.debug("Sony device user input %s", user_input)
     sony_device = SonyDevice(user_input[CONF_HOST], DEFAULT_DEVICE_NAME,
@@ -75,7 +79,7 @@ class SonyConfigFlow(ConfigFlow, domain=DOMAIN):
 
     def __init__(self) -> None:
         """Sony Config Flow."""
-        self.api: SonyDevice = None
+        self.api: SonyDevice | None = None
         self.discovery_info: dict[str, Any] = {}
 
     async def async_step_user(

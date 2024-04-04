@@ -1,15 +1,12 @@
 """The IntelliFire integration."""
 from __future__ import annotations
 
-import asyncio
 import logging
 from typing import Any
-from urllib.error import HTTPError
 
 import requests
 from homeassistant.const import STATE_OFF, STATE_ON, STATE_PLAYING, STATE_PAUSED
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from sonyapilib.device import SonyDevice, HttpMethod
 
@@ -63,7 +60,7 @@ class SonyDeviceData:
         """Initialize the device by reading the necessary resources from it."""
         sony_device = self.coordinator.api
         try:
-            response = await self.coordinator.hass.async_add_executor_job(sony_device._send_http,sony_device.dmr_url, HttpMethod.GET)
+            response = await self.coordinator.hass.async_add_executor_job(sony_device._send_http, sony_device.dmr_url, HttpMethod.GET)
         except requests.exceptions.ConnectionError:
             _LOGGER.debug("Sony device connection error, waiting next call")
             response = None
