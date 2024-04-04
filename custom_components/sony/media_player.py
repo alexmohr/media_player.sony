@@ -5,6 +5,7 @@ For more details about this platform, please refer to the documentation at
 https://github.com/dilruacs/media_player.sony
 """
 import logging
+import time
 
 from homeassistant.components.media_player import MediaPlayerEntity, ENTITY_ID_FORMAT
 from homeassistant.components.media_player.const import (
@@ -165,6 +166,7 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
         # self._name = f"{self.coordinator.api.name} Media Player"
         # self._attr_name = f"{self.coordinator.api.name} Media Player"
         self._state = STATE_OFF
+        self._attr_volume_level = 0
         self._muted = False
         self._id = None
         self._playing = False
@@ -208,6 +210,7 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
     #         if self._state == STATE_ON:
     #             power_status = self.sonydevice.get_power_status()
     #             if power_status:
+    #                 self.update_volume()
     #                 playback_info = self.sonydevice.get_playing_status()
     #                 if playback_info == "PLAYING":
     #                     self._state = STATE_PLAYING
@@ -226,6 +229,12 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
         """Update TV info."""
         _LOGGER.debug("Sony media player update %s", self.coordinator.data)
         self._state = self.coordinator.data.get("state", None)
+        update_volume()
+
+    def update_volume(self):
+        """Update volume level info."""
+        self._attr_volume_level = 0
+        _LOGGER.debug(self._attr_volume_level)
 
     @property
     def name(self):
@@ -300,10 +309,14 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
     def volume_up(self):
         """Send stop command."""
         self.coordinator.api.volume_up()
+        time.sleep(0.5)
+        self.update_volume()
 
     def volume_down(self):
         """Send stop command."""
         self.coordinator.api.volume_down()
+        time.sleep(0.5)
+        self.update_volume()
 
     def mute_volume(self, mute):
         """Send stop command."""
