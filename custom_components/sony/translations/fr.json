@@ -1,0 +1,34 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "L'appareil est déjà configuré"
+    },
+    "error": {
+      "cannot_connect": "Echec de la connexion",
+      "invalid_auth": "Authentification incorrecte",
+      "unknown": "Erreur inconnue"
+    },
+    "step": {
+      "user": {
+        "data": {
+          "host": "Hôte"
+        }
+      },
+      "zeroconf_confirm": {
+        "data": {
+          "host": "Hôte"
+        },
+        "title": "Sony media"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "host": "Hôte"
+        }
+      }
+    }
+  }
+}
