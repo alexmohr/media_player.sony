@@ -56,6 +56,7 @@ class SonyDeviceData:
     def __init__(self, coordinator: SonyCoordinator):
         self.coordinator = coordinator
         self.state = STATE_OFF
+        self.volume = 0
         self._init = False
 
     async def init_device(self):
@@ -102,6 +103,7 @@ class SonyDeviceData:
             return
 
         self.state = STATE_ON
+        await self.update_volume()
 
         # Retrieve the latest data.
         try:
@@ -117,3 +119,7 @@ class SonyDeviceData:
             _LOGGER.error("Sony device error", exception_instance)
             self.state = STATE_OFF
             self._init = False
+
+    async def update_volume(self) -> None:
+        self.volume = await self.coordinator.hass.async_add_executor_job(self.coordinator.api.get_volume)
+        _LOGGER.debug(self.volume)

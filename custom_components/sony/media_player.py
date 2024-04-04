@@ -5,7 +5,6 @@ For more details about this platform, please refer to the documentation at
 https://github.com/dilruacs/media_player.sony
 """
 import logging
-import time
 
 from homeassistant.components.media_player import MediaPlayerEntity, ENTITY_ID_FORMAT
 from homeassistant.components.media_player.const import (
@@ -196,44 +195,15 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
     def unique_id(self) -> str | None:
         return self._unique_id
 
-    # def update(self):
-    #     """Update TV info."""
-    #     self.sonydevice.init_device()
-    #     if not self.sonydevice.get_power_status():
-    #         self._state = STATE_OFF
-    #         return
-    #
-    #     self._state = STATE_ON
-    #
-    #     # Retrieve the latest data.
-    #     try:
-    #         if self._state == STATE_ON:
-    #             power_status = self.sonydevice.get_power_status()
-    #             if power_status:
-    #                 self.update_volume()
-    #                 playback_info = self.sonydevice.get_playing_status()
-    #                 if playback_info == "PLAYING":
-    #                     self._state = STATE_PLAYING
-    #                 elif playback_info == "PAUSED_PLAYBACK":
-    #                     self._state = STATE_PAUSED
-    #                 else:
-    #                     self._state = STATE_ON
-    #             else:
-    #                 self._state = STATE_OFF
-    #
-    #     except Exception as exception_instance:  # pylint: disable=broad-except
-    #         _LOGGER.error(exception_instance)
-    #         self._state = STATE_OFF
-
     def update(self):
         """Update TV info."""
         _LOGGER.debug("Sony media player update %s", self.coordinator.data)
         self._state = self.coordinator.data.get("state", None)
-        update_volume()
+        self.update_volume()
 
     def update_volume(self):
         """Update volume level info."""
-        self._attr_volume_level = 0
+        self._attr_volume_level = self.coordinator.data.get("volume", 0)
         _LOGGER.debug(self._attr_volume_level)
 
     @property
@@ -309,14 +279,16 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
     def volume_up(self):
         """Send stop command."""
         self.coordinator.api.volume_up()
-        time.sleep(0.5)
-        self.update_volume()
+        # TODO: Update volume
+        # time.sleep(0.5)
+        # self.update_volume()
 
     def volume_down(self):
         """Send stop command."""
         self.coordinator.api.volume_down()
-        time.sleep(0.5)
-        self.update_volume()
+        # TODO: Update volume
+        # time.sleep(0.5)
+        # self.update_volume()
 
     def mute_volume(self, mute):
         """Send stop command."""

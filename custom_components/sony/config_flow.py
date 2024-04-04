@@ -47,7 +47,8 @@ def validate_input(user_input: dict[str, Any]) -> dict[str, Any]:
             config.update(user_input)
             return config
         else:
-            _LOGGER.error("An unknown error occured during registration")
+            _LOGGER.error("An unknown error occurred during registration")
+            # TODO: Cancel registration
 
     if not authenticated:
         authenticated = sony_device.send_authentication(pin)

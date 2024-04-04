@@ -4,7 +4,7 @@ from datetime import timedelta
 DOMAIN = "sony"
 
 CONF_NAME = "sony"
-DEVICE_SCAN_INTERVAL = timedelta(seconds=60)
+DEVICE_SCAN_INTERVAL = timedelta(seconds=5)  # TODO: Add to config
 SONY_COORDINATOR = "sony_coordinator"
 SONY_API = "sony_api"
 DEFAULT_DEVICE_NAME = "Sony Device"
