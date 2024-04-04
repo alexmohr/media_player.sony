@@ -13,6 +13,7 @@
         "data": {
           "host": "Host",
           "pin": "PIN code",
+          "broadcast": "Broadcast IP",
           "app_port" : "App port",
           "dmr_port" : "DMR port",
           "ircc_port" : "IRCC port"

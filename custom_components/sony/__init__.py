@@ -1,7 +1,6 @@
 """The sony component."""
 from __future__ import annotations
 
-import asyncio
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -10,8 +9,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from sonyapilib.device import SonyDevice, AuthenticationResult
 
-from .const import DOMAIN, CONF_NAME, CONF_HOST, CONF_APP_PORT, CONF_IRCC_PORT, CONF_DMR_PORT, SONY_COORDINATOR, \
-    SONY_API, DEFAULT_DEVICE_NAME
+from .const import DOMAIN, CONF_NAME, CONF_HOST, CONF_BROADCAST_ADDRESS, CONF_APP_PORT, CONF_IRCC_PORT, CONF_DMR_PORT, \
+    SONY_COORDINATOR, SONY_API, DEFAULT_DEVICE_NAME
 from .coordinator import SonyCoordinator
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -21,13 +20,14 @@ PLATFORMS: list[Platform] = [
     Platform.REMOTE
 ]
 
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Unfolded Circle Remote from a config entry."""
 
     try:
         sony_device = SonyDevice(entry.data[CONF_HOST], DEFAULT_DEVICE_NAME,
-                             psk=None, app_port=entry.data[CONF_APP_PORT],
-                             dmr_port=entry.data[CONF_DMR_PORT], ircc_port=entry.data[CONF_IRCC_PORT])
+                                 psk=None, app_port=entry.data[CONF_APP_PORT],
+                                 dmr_port=entry.data[CONF_DMR_PORT], ircc_port=entry.data[CONF_IRCC_PORT])
         pin = entry.data.get('pin', None)
         sony_device.pin = pin
         sony_device.mac = entry.data.get('mac_address', None)
@@ -72,6 +72,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # await zeroconf.async_get_async_instance(hass)
     return True
 
+
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     try:
@@ -86,7 +87,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
     """Update Listener."""
-    #TODO Should be ?
-    #await async_unload_entry(hass, entry)
-    #await async_setup_entry(hass, entry)
+    # TODO Should be ?
+    # await async_unload_entry(hass, entry)
+    # await async_setup_entry(hass, entry)
     await hass.config_entries.async_reload(entry.entry_id)
