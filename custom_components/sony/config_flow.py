@@ -11,7 +11,7 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 from sonyapilib.device import SonyDevice, AuthenticationResult
 
-from .const import (DOMAIN, DEFAULT_DEVICE_NAME,
+from .const import (DOMAIN, DEFAULT_DEVICE_NAME, SONY_DEFAULT_DEVICE_NAME,
                     CONF_HOST, CONF_PIN,  # CONF_MAC_ADDRESS, CONF_BROADCAST_ADDRESS,
                     CONF_APP_PORT, DEFAULT_APP_PORT, CONF_DMR_PORT,
                     DEFAULT_DMR_PORT, CONF_IRCC_PORT, DEFAULT_IRCC_PORT)
@@ -37,7 +37,7 @@ def validate_input(user_input: dict[str, Any]) -> dict[str, Any]:
     # errors = {}
     pin = user_input.get('pin')
     _LOGGER.debug("Sony device user input %s", user_input)
-    sony_device = SonyDevice(user_input[CONF_HOST], DEFAULT_DEVICE_NAME,
+    sony_device = SonyDevice(user_input[CONF_HOST], SONY_DEFAULT_DEVICE_NAME,
                              psk=None, app_port=user_input[CONF_APP_PORT],
                              dmr_port=user_input[CONF_DMR_PORT], ircc_port=user_input[CONF_IRCC_PORT])
     authenticated = False
