@@ -22,21 +22,21 @@ You should be able to see the PIN code on your TV screen and type it in, then va
 
 **Configuration variables**
 
-Key | Description
-:--- | :---
-**host (Required)** | IP Address or hostname of the device
-**name (Required)** | Descriptive name for the device
-**broadcast (Optional)** | The broadcast ip of the subnet
-**app_port (Optional)** | The app port, defaults to 50202
-**dmr_port (Optional)** | The dmr port, defaults to 52323
-**ircc_port (Optional)** | The ircc port, defaults to 50001
+| Key                      | Description                          |
+|:-------------------------|:-------------------------------------|
+| **host (Required)**      | IP Address or hostname of the device |
+| **name (Required)**      | Descriptive name for the device      |
+| **broadcast (Optional)** | The broadcast ip of the subnet       |
+| **app_port (Optional)**  | The app port, defaults to 50202      |
+| **dmr_port (Optional)**  | The dmr port, defaults to 52323      |
+| **ircc_port (Optional)** | The ircc port, defaults to 50001     |
 
 ### Devices
 Devices listed here configure the ports different. This list is not complete. If you devices does work with other ports please add it via a PR
 
-Device | App Port | Dmr Port | Ircc
-:--- | : ---
-BDP-S590 | 52323 | 50202 | 52323
+| Device   | App Port | Dmr Port | Ircc  |
+|:---------|:---------|:---------|:------|
+| BDP-S590 | 52323    | 50202    | 52323 |
 
 ## Send commands through remote control entity
 Example to trigger a command from the remote entity :
@@ -52,48 +52,48 @@ Available commands for remote entity :
 
 Here is the list of available commands, depending on your device
 
-Command|Description
---|--
-Num1|1
-Num2|2
-Num3|3
-Num4|4
-Num5|5
-Num6|6
-Num7|7
-Num8|8
-Num9|9
-Num0|0
-Power|Power
-Eject|Eject
-Stop|Stop
-Pause|Pause
-Play|Play
-Rewind|Rewind
-Forward|Forward
-PopUpMenu|Popup Menu
-TopMenu|Top Menu
-Up|Up
-Down|Down
-Left|Left
-Right|Right
-Confirm|Confirm
-Options|Options
-Display|Display
-Home|Home
-Return|Return
-Karaoke|Karaoke
-Netflix|Netflix
-Mode3D|3D mode
-Next|Next chapter
-Prev|Previous chapter
-Favorites|Favorites
-SubTitle|SubTitle
-Audio|Audio
-Angle|Angle
-Blue|Blue
-Red|Red
-Green|Green
-Yellow|Yellow
-Advance|Advance
-Replay|Replay
+| Command   | Description      |
+|-----------|------------------|
+| Num1      | 1                |
+| Num2      | 2                |
+| Num3      | 3                |
+| Num4      | 4                |
+| Num5      | 5                |
+| Num6      | 6                |
+| Num7      | 7                |
+| Num8      | 8                |
+| Num9      | 9                |
+| Num0      | 0                |
+| Power     | Power            |
+| Eject     | Eject            |
+| Stop      | Stop             |
+| Pause     | Pause            |
+| Play      | Play             |
+| Rewind    | Rewind           |
+| Forward   | Forward          |
+| PopUpMenu | Popup Menu       |
+| TopMenu   | Top Menu         |
+| Up        | Up               |
+| Down      | Down             |
+| Left      | Left             |
+| Right     | Right            |
+| Confirm   | Confirm          |
+| Options   | Options          |
+| Display   | Display          |
+| Home      | Home             |
+| Return    | Return           |
+| Karaoke   | Karaoke          |
+| Netflix   | Netflix          |
+| Mode3D    | 3D mode          |
+| Next      | Next chapter     |
+| Prev      | Previous chapter |
+| Favorites | Favorites        |
+| SubTitle  | SubTitle         |
+| Audio     | Audio            |
+| Angle     | Angle            |
+| Blue      | Blue             |
+| Red       | Red              |
+| Green     | Green            |
+| Yellow    | Yellow           |
+| Advance   | Advance          |
+| Replay    | Replay           |
