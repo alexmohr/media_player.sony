@@ -229,6 +229,7 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
             self._state = STATE_OFF
 
     def update_volume(self):
+        """Update volume info."""
         self._attr_volume_level = self.sonydevice.get_volume()
         _LOGGER.debug(self._attr_volume_level)
 
