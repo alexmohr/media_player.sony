@@ -5,28 +5,38 @@ For more details about this platform, please refer to the documentation at
 https://github.com/dilruacs/media_player.sony
 """
 import logging
-from sonyapilib.device import SonyDevice
-
 import voluptuous as vol
 
 from homeassistant.components.media_player import (
     MediaPlayerEntity, PLATFORM_SCHEMA)
-
+    
 from homeassistant.components.media_player.const import (
-    SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK, SUPPORT_TURN_ON,
-    SUPPORT_TURN_OFF, SUPPORT_PLAY, SUPPORT_PLAY_MEDIA, SUPPORT_STOP,
-    SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_STEP)
-
+    SUPPORT_NEXT_TRACK,
+    SUPPORT_PAUSE,
+    SUPPORT_PREVIOUS_TRACK, 
+    SUPPORT_TURN_ON,
+    SUPPORT_TURN_OFF,
+    SUPPORT_PLAY,
+    SUPPORT_PLAY_MEDIA,
+    SUPPORT_STOP,
+    SUPPORT_SELECT_SOURCE,
+    SUPPORT_VOLUME_MUTE,
+    SUPPORT_VOLUME_STEP)
+    
 from homeassistant.const import (
-    CONF_HOST, CONF_NAME, STATE_OFF, STATE_ON, STATE_PLAYING, STATE_PAUSED)
+    CONF_HOST,
+    CONF_NAME,
+    STATE_OFF,
+    STATE_ON,
+    STATE_PLAYING,
+    STATE_PAUSED)
 import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
 
+VERSION = '0.1.0'
 
-VERSION = '0.1.3'
-
-REQUIREMENTS = ['sonyapilib==0.4.3']
+REQUIREMENTS = ['sonyapilib==0.4.0']
 
 SONY_CONFIG_FILE = 'sony.conf'
 
@@ -37,32 +47,28 @@ DEFAULT_NAME = 'Sony Media Player'
 NICKNAME = 'Home Assistant'
 
 CONF_BROADCAST_ADDRESS = 'broadcast_address'
-CONF_APP_PORT = 'app_port'
-CONF_DMR_PORT = 'dmr_port'
-CONF_IRCC_PORT = 'ircc_port'
-DEFAULT_APP_PORT = 50202
-DEFAULT_DMR_PORT = 52323
-DEFAULT_IRCC_PORT = 50001
-
 
 # Map ip to request id for configuring
 _CONFIGURING = {}
 
 _LOGGER = logging.getLogger(__name__)
 
-SUPPORT_SONY = SUPPORT_PAUSE | \
-    SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
-    SUPPORT_TURN_ON | SUPPORT_TURN_OFF | \
-    SUPPORT_PLAY | SUPPORT_PLAY_MEDIA | SUPPORT_STOP | \
-    SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP
+SUPPORT_SONY = (SUPPORT_PAUSE 
+                 | SUPPORT_PREVIOUS_TRACK
+                 | SUPPORT_NEXT_TRACK 
+                 | SUPPORT_TURN_ON
+                 | SUPPORT_TURN_OFF
+                 | SUPPORT_SELECT_SOURCE
+                 | SUPPORT_PLAY
+                 | SUPPORT_PLAY_MEDIA 
+                 | SUPPORT_STOP 
+                 | SUPPORT_VOLUME_MUTE 
+                 | SUPPORT_VOLUME_STEP)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_NAME, default=DEFAULT_NAME): cv.string,
     vol.Optional(CONF_BROADCAST_ADDRESS): cv.string,
-    vol.Optional(CONF_APP_PORT, default=DEFAULT_APP_PORT): cv.port,
-    vol.Optional(CONF_DMR_PORT, default=DEFAULT_DMR_PORT): cv.port,
-    vol.Optional(CONF_IRCC_PORT, default=DEFAULT_IRCC_PORT): cv.port
 })
 
 
@@ -76,13 +82,14 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     pin = None
     sony_config = load_json(hass.config.path(SONY_CONFIG_FILE))
+    from sonyapilib.device import SonyDevice
 
     while sony_config:
         # Set up a configured TV
         host_ip, host_config = sony_config.popitem()
         if host_ip == host:
-            device = SonyDevice.load_from_json(host_config)
-            hass_device = SonyMediaPlayerEntity(device)
+            device = SonyDevice.load_from_json(host_config['device'])
+            hass_device = SonyMediaPlayerDevice(device)
             add_devices([hass_device])
             return
 
@@ -92,6 +99,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 def setup_sonymediaplayer(config, sony_device, hass, add_devices):
     """Set up a Sony Media Player based on host parameter."""
     host = config.get(CONF_HOST)
+    name = config.get(CONF_NAME)
     broadcast = config.get(CONF_BROADCAST_ADDRESS)
 
     if sony_device is None:
@@ -106,12 +114,12 @@ def setup_sonymediaplayer(config, sony_device, hass, add_devices):
 
         if broadcast:
             sony_device.broadcast = broadcast
-
-        hass_device = SonyMediaPlayerEntity(sony_device)
-        config[host] = hass_device.sonydevice.save_to_json()
+        hass_device = SonyMediaPlayerDevice(sony_device)
 
         # Save config, we need the mac address to support wake on LAN
-        save_json(hass.config.path(SONY_CONFIG_FILE), config)
+        save_json(
+            hass.config.path(SONY_CONFIG_FILE), {host: {
+                'device': hass_device.sonydevice.save_to_json()}})
 
         add_devices([hass_device])
 
@@ -120,10 +128,6 @@ def request_configuration(config, hass, add_devices):
     """Request configuration steps from the user."""
     host = config.get(CONF_HOST)
     name = config.get(CONF_NAME)
-    app_port = config.get(CONF_APP_PORT)
-    dmr_port = config.get(CONF_DMR_PORT)
-    ircc_port = config.get(CONF_IRCC_PORT)
-    psk = None
 
     configurator = hass.components.configurator
 
@@ -135,12 +139,10 @@ def request_configuration(config, hass, add_devices):
 
     def sony_configuration_callback(data):
         """Handle the entry of user PIN."""
-        from sonyapilib.device import AuthenticationResult
+        from sonyapilib.device import SonyDevice, AuthenticationResult
 
         pin = data.get('pin')
-        sony_device = SonyDevice(host, name,
-                                 psk=psk, app_port=app_port,
-                                 dmr_port=dmr_port, ircc_port=ircc_port)
+        sony_device = SonyDevice(host, name)
 
         authenticated = False
 
@@ -164,8 +166,8 @@ def request_configuration(config, hass, add_devices):
 
     _CONFIGURING[host] = configurator.request_config(
         name, sony_configuration_callback,
-        description='Enter the Pin shown on your Sony Device. '
-        'If no Pin is shown, enter 0000 '
+        description='Enter the Pin shown on your Sony Device. ' +
+        'If no Pin is shown, enter 0000 ' +
         'to let the device show you a Pin.',
         description_image="/static/images/smart-tv.png",
         submit_caption="Confirm",
@@ -173,7 +175,7 @@ def request_configuration(config, hass, add_devices):
     )
 
 
-class SonyMediaPlayerEntity(MediaPlayerEntity):
+class SonyMediaPlayerDevice(MediaPlayerEntity):
     # pylint: disable=too-many-instance-attributes
     """Representation of a Sony mediaplayer."""
 
@@ -183,6 +185,8 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
 
         Mac address is optional but neccessary for wake on LAN
         """
+        from sonyapilib.device import SonyDevice
+
         self.sonydevice = sony_device
         self._state = STATE_OFF
         self._muted = False
@@ -190,6 +194,7 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
         self._playing = False
         _LOGGER.error(sony_device.pin)
         _LOGGER.error(sony_device.client_id)
+        
 
         try:
             self.update()
@@ -198,7 +203,6 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
 
     def update(self):
         """Update TV info."""
-        self.sonydevice.init_device()
         if not self.sonydevice.get_power_status():
             self._state = STATE_OFF
             return
@@ -293,7 +297,11 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
     def media_stop(self):
         """Send stop command."""
         self.sonydevice.stop()
-
+       
+    def mute_volume(self, mute):
+        """Send stop command."""
+        self.sonydevice.mute()
+        
     def volume_up(self):
         """Send stop command."""
         self.sonydevice.volume_up()
@@ -301,7 +309,18 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
     def volume_down(self):
         """Send stop command."""
         self.sonydevice.volume_down()
+        
+    @property
+    def source_list(self):
+        """Return a list of running apps."""
+        return "Hdmi 1", "Hdmi 2"
 
-    def mute_volume(self, mute):
-        """Send stop command."""
-        self.sonydevice.mute()
+    def select_source(self, source):
+        """Select input source."""
+        if source == "Hdmi 1":
+            self.sonydevice.input_hdmi1()
+        elif source == "Hdmi 2":
+            self.sonydevice.input_hdmi2()
+        else:
+          return ""
+
