@@ -7,8 +7,7 @@ https://github.com/dilruacs/media_player.sony
 import logging
 
 from homeassistant.components.media_player import MediaPlayerEntity, MediaPlayerDeviceClass, ENTITY_ID_FORMAT
-from homeassistant.components.media_player.const import (
-    MediaPlayerEntityFeature)
+from homeassistant.components.media_player.const import MediaPlayerEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_OFF
 from homeassistant.core import HomeAssistant, callback
@@ -21,7 +20,7 @@ from .const import DOMAIN, SONY_COORDINATOR
 
 _LOGGER = logging.getLogger(__name__)
 
-SUPPORT_SONY = (MediaPlayerEntityFeature.VOLUME_MUTE | MediaPlayerEntityFeature.VOLUME_STEP |
+SUPPORT_SONY = (MediaPlayerEntityFeature.VOLUME_MUTE | MediaPlayerEntityFeature.VOLUME_STEP | MediaPlayerEntityFeature.VOLUME_SET |
                 MediaPlayerEntityFeature.PREVIOUS_TRACK | MediaPlayerEntityFeature.NEXT_TRACK |
                 MediaPlayerEntityFeature.TURN_ON | MediaPlayerEntityFeature.TURN_OFF |
                 MediaPlayerEntityFeature.PLAY | MediaPlayerEntityFeature.PLAY_MEDIA | MediaPlayerEntityFeature.PAUSE | MediaPlayerEntityFeature.STOP)

@@ -119,5 +119,5 @@ class SonyDeviceData:
             self._init = False
 
     async def update_volume(self) -> None:
-        self.volume = await self.coordinator.hass.async_add_executor_job(self.coordinator.api.get_volume)
+        self.volume = await self.coordinator.hass.async_add_executor_job(self.coordinator.api.get_volume) / 100
         _LOGGER.debug(self.volume)
