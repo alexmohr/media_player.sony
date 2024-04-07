@@ -316,6 +316,7 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
         self.update_volume()
 
     def set_volume_level(self, volume):
+        """Send set volume command."""
         self.sonydevice.set_volume(int(volume * 100))
 
     def mute_volume(self, mute):
