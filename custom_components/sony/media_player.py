@@ -17,7 +17,7 @@ from homeassistant.components.media_player import (
 from homeassistant.components.media_player.const import (
     SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK, SUPPORT_TURN_ON,
     SUPPORT_TURN_OFF, SUPPORT_PLAY, SUPPORT_PLAY_MEDIA, SUPPORT_STOP,
-    SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_STEP)
+    SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_STEP, SUPPORT_VOLUME_SET)
 
 from homeassistant.const import (
     CONF_HOST, CONF_NAME, STATE_OFF, STATE_ON, STATE_PLAYING, STATE_PAUSED)
@@ -56,7 +56,7 @@ SUPPORT_SONY = SUPPORT_PAUSE | \
     SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
     SUPPORT_TURN_ON | SUPPORT_TURN_OFF | \
     SUPPORT_PLAY | SUPPORT_PLAY_MEDIA | SUPPORT_STOP | \
-    SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP
+    SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_SET
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
@@ -230,7 +230,7 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
 
     def update_volume(self):
         """Update volume info."""
-        self._attr_volume_level = self.sonydevice.get_volume()
+        self._attr_volume_level = self.sonydevice.get_volume() / 100
         _LOGGER.debug(self._attr_volume_level)
 
     @property
@@ -314,6 +314,9 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
         self.sonydevice.volume_down()
         time.sleep(0.5)
         self.update_volume()
+
+    def set_volume_level(self, volume):
+        self.sonydevice.set_volume(int(volume * 100))
 
     def mute_volume(self, mute):
         """Send stop command."""
