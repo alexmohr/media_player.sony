@@ -10,8 +10,8 @@ from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from sonyapilib.device import SonyDevice, AuthenticationResult
 
 from .const import (DOMAIN,
-                    CONF_NAME, CONF_HOST, CONF_PIN, CONF_MAC_ADDRESS, CONF_BROADCAST_ADDRESS, CONF_APP_PORT, CONF_IRCC_PORT, CONF_DMR_PORT,
-                    SONY_COORDINATOR, SONY_API, DEFAULT_DEVICE_NAME, SONY_DEFAULT_DEVICE_NAME)
+                    CONF_HOST, CONF_PIN, CONF_MAC_ADDRESS, CONF_BROADCAST_ADDRESS, CONF_APP_PORT, CONF_IRCC_PORT, CONF_DMR_PORT,
+                    SONY_COORDINATOR, SONY_API, DEFAULT_DEVICE_NAME)
 from .coordinator import SonyCoordinator
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -26,7 +26,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Unfolded Circle Remote from a config entry."""
 
     try:
-        sony_device = SonyDevice(entry.data[CONF_HOST], SONY_DEFAULT_DEVICE_NAME,
+        sony_device = SonyDevice(entry.data[CONF_HOST], DEFAULT_DEVICE_NAME,
                                  psk=None, app_port=entry.data[CONF_APP_PORT],
                                  dmr_port=entry.data[CONF_DMR_PORT], ircc_port=entry.data[CONF_IRCC_PORT])
         pin = entry.data.get(CONF_PIN, None)

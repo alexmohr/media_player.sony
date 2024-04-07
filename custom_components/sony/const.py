@@ -3,12 +3,10 @@ from datetime import timedelta
 
 DOMAIN = "sony"
 
-CONF_NAME = "sony"
 DEVICE_SCAN_INTERVAL = timedelta(seconds=5)  # TODO: Add to config
 SONY_COORDINATOR = "sony_coordinator"
 SONY_API = "sony_api"
-DEFAULT_DEVICE_NAME = "Sony Device"
-SONY_DEFAULT_DEVICE_NAME = DEFAULT_DEVICE_NAME  # TODO: Need fix :D "Home Assistant"
+DEFAULT_DEVICE_NAME = "Home Assistant"
 
 CONF_HOST = "host"
 CONF_PIN = "pin"

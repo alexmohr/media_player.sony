@@ -54,6 +54,7 @@ class SonyDeviceData:
         self.coordinator = coordinator
         self.state = STATE_OFF
         self.volume = 0
+        self.muted = False
         self._init = False
 
     async def init_device(self):

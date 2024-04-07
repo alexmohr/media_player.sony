@@ -56,7 +56,7 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
         # self._attr_name = f"{self.coordinator.api.name} Media Player"
         self._state = STATE_OFF
         self._attr_volume_level = 0
-        self._muted = False
+        self._attr_is_volume_muted = False
         self._id = None
         self._playing = False
 
@@ -76,9 +76,9 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
                 # Mac address is unique identifiers within a specific domain
                 (DOMAIN, self.coordinator.api.mac)
             },
-            name=self.coordinator.api.nickname,
-            manufacturer="Sony",
-            model=self.coordinator.api.client_id
+            name=self.coordinator.api.friendly_name,
+            manufacturer=self.coordinator.api.manufacturer,
+            model=self.coordinator.api.model_name
         )
 
     @property
@@ -94,12 +94,13 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
     def update_volume(self):
         """Update volume level info."""
         self._attr_volume_level = self.coordinator.data.get("volume", 0)
+        self._attr_is_volume_muted = self.coordinator.data.get("muted", False)  # TODO: Update
         _LOGGER.debug(self._attr_volume_level)
 
     @property
     def name(self):
         """Return the name of the device."""
-        return self.coordinator.api.nickname
+        return self.coordinator.api.friendly_name
 
     @property
     def state(self):
@@ -183,6 +184,7 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
     def mute_volume(self, mute):
         """Send stop command."""
         self.coordinator.api.mute()
+        # TODO: Update volume
 
     @callback
     def _handle_coordinator_update(self) -> None:

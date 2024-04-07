@@ -28,7 +28,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import SonyCoordinator
-from .const import DOMAIN, SONY_COORDINATOR, DEFAULT_DEVICE_NAME
+from .const import DOMAIN, SONY_COORDINATOR
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,7 +59,7 @@ class SonyRemoteEntity(CoordinatorEntity[SonyCoordinator], RemoteEntity):
         """
         super().__init__(coordinator)
         self.coordinator = coordinator
-        self._name = f"{DEFAULT_DEVICE_NAME} Remote"
+        self._name = f"{self.coordinator.api.friendly_name} Remote"
         # self._attr_name = f"{self.coordinator.api.name} Remote"
         self._attr_icon = "mdi:remote-tv"
         self._attr_native_value = "OFF"
@@ -83,9 +83,9 @@ class SonyRemoteEntity(CoordinatorEntity[SonyCoordinator], RemoteEntity):
                 # Mac address is unique identifiers within a specific domain
                 (DOMAIN, self.coordinator.api.mac)
             },
-            name=self.coordinator.api.nickname,
-            manufacturer="Sony",
-            model=self.coordinator.api.client_id
+            name=self.coordinator.api.friendly_name,
+            manufacturer=self.coordinator.api.manufacturer,
+            model=self.coordinator.api.model_name
         )
 
     @property
@@ -100,7 +100,7 @@ class SonyRemoteEntity(CoordinatorEntity[SonyCoordinator], RemoteEntity):
     @property
     def name(self):
         """Return the name of the device."""
-        return self.coordinator.api.nickname
+        return self.coordinator.api.friendly_name
 
     @property
     def state(self):

@@ -6,19 +6,20 @@ from typing import Any
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
-from homeassistant.const import CONF_HOST  # , CONF_NAME, CONF_PORT
+from homeassistant.const import CONF_NAME, CONF_HOST
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 from sonyapilib.device import SonyDevice, AuthenticationResult
 
-from .const import (DOMAIN, DEFAULT_DEVICE_NAME, SONY_DEFAULT_DEVICE_NAME,
+from .const import (DOMAIN, DEFAULT_DEVICE_NAME,
                     CONF_HOST, CONF_PIN,  # CONF_MAC_ADDRESS, CONF_BROADCAST_ADDRESS,
                     CONF_APP_PORT, DEFAULT_APP_PORT, CONF_DMR_PORT,
                     DEFAULT_DMR_PORT, CONF_IRCC_PORT, DEFAULT_IRCC_PORT)
 
 _LOGGER = logging.getLogger(__name__)
 
-STEP_USER_DATA_SCHEMA = vol.Schema({vol.Required(CONF_HOST): str,
+STEP_USER_DATA_SCHEMA = vol.Schema({vol.Optional(CONF_NAME): str,  # TODO: Use for device and remote name
+                                    vol.Required(CONF_HOST): str,
                                     vol.Optional(CONF_PIN, default="0000"): str,
                                     # vol.Optional(CONF_MAC_ADDRESS): str,
                                     # vol.Optional(CONF_BROADCAST_ADDRESS): str,
@@ -37,7 +38,7 @@ def validate_input(user_input: dict[str, Any]) -> dict[str, Any]:
     # errors = {}
     pin = user_input.get('pin')
     _LOGGER.debug("Sony device user input %s", user_input)
-    sony_device = SonyDevice(user_input[CONF_HOST], SONY_DEFAULT_DEVICE_NAME,
+    sony_device = SonyDevice(user_input[CONF_HOST], DEFAULT_DEVICE_NAME,
                              psk=None, app_port=user_input[CONF_APP_PORT],
                              dmr_port=user_input[CONF_DMR_PORT], ircc_port=user_input[CONF_IRCC_PORT])
     authenticated = False
@@ -115,11 +116,13 @@ class SonyConfigFlow(ConfigFlow, domain=DOMAIN):
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
         else:
+            host = self.user_input[CONF_HOST]
+
             if len(errors.keys()) == 0:
-                await self.async_set_unique_id(self.user_input[CONF_HOST])
+                await self.async_set_unique_id(host)
                 self._abort_if_unique_id_configured()
 
-                return self.async_create_entry(title=DEFAULT_DEVICE_NAME, data=info)
+                return self.async_create_entry(title=f"Sony Device ({host})", data=info)
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
