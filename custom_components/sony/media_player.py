@@ -185,6 +185,11 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
         # time.sleep(0.5)
         # self.update_volume()
 
+    def set_volume_level(self, volume):
+        """Send set volume command."""
+        self.coordinator.api.set_volume(int(volume * 100))
+        # TODO: Update volume
+
     def mute_volume(self, mute):
         """Send stop command."""
         self.coordinator.api.mute()
