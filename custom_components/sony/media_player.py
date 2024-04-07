@@ -6,7 +6,7 @@ https://github.com/dilruacs/media_player.sony
 """
 import logging
 
-from homeassistant.components.media_player import MediaPlayerEntity, ENTITY_ID_FORMAT
+from homeassistant.components.media_player import MediaPlayerEntity, MediaPlayerDeviceClass, ENTITY_ID_FORMAT
 from homeassistant.components.media_player.const import (
     MediaPlayerEntityFeature)
 from homeassistant.config_entries import ConfigEntry
@@ -84,6 +84,10 @@ class SonyMediaPlayerEntity(CoordinatorEntity[SonyCoordinator], MediaPlayerEntit
     @property
     def unique_id(self) -> str | None:
         return self._unique_id
+
+    @property
+    def device_class(self) -> MediaPlayerDeviceClass | None:
+        return MediaPlayerDeviceClass.RECEIVER  # TODO: Maybe something else in some cases?
 
     def update(self):
         """Update TV info."""
