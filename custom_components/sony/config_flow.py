@@ -21,11 +21,16 @@ from .const import (DOMAIN, DEFAULT_DEVICE_NAME,
                     DEFAULT_BROADCAST_ADDRESS,
                     DEFAULT_DMR_PORT, CONF_IRCC_PORT, DEFAULT_IRCC_PORT,
                     DEFAULT_UPDATE_INTERVAL)
+from .helper import (
+    ValidationResult,
+    validate_ip_address,
+    validate_mac_address
+)
 
 _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema({
-    vol.Optional(CONF_NAME): str,  # TODO: Use for device and remote name
+    vol.Optional(CONF_NAME): str,
     vol.Required(CONF_HOST): str,
     vol.Optional(CONF_MAC_ADDRESS): str,
     vol.Optional(CONF_BROADCAST_ADDRESS,
@@ -51,6 +56,27 @@ STEP_PIN_DATA_SCHEMA = vol.Schema({
 })
 
 
+def pre_validate_input(user_input: dict[str, Any]) -> ValidationResult:
+    """Check if all fields are correct."""
+    _LOGGER.debug("Sony device user input %s", user_input)
+    # errors = {}
+
+    if not validate_ip_address(user_input.get(CONF_HOST)):
+        return ValidationResult.INVALID_HOST
+
+    if not validate_ip_address(user_input.get(CONF_BROADCAST_ADDRESS)):
+        return ValidationResult.INVALID_BROADCAST_ADDRESS
+
+    mac_address = user_input.get(CONF_MAC_ADDRESS)
+
+    if mac_address and not validate_mac_address(mac_address):
+        return ValidationResult.INVALID_MAC_ADDRESS
+
+    # TODO: Add more checks
+
+    return ValidationResult.SUCCESS
+
+
 # TODO: Sony device supports SSDP discovery
 def validate_input(user_input: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect.
@@ -58,12 +84,17 @@ def validate_input(user_input: dict[str, Any]) -> dict[str, Any]:
     Data has the keys from STEP_USER_DATA_SCHEMA
     with values provided by the user.
     """
-    _LOGGER.debug("Sony device user input %s", user_input)
-    # errors = {}
+
+    validation_result = pre_validate_input(user_input)
+
+    if validation_result != ValidationResult.SUCCESS:
+        config = {"error": validation_result}
+        config.update(user_input)
+
+        return config
 
     pin = user_input.get(CONF_PIN)
     broadcast_address = user_input.get(CONF_BROADCAST_ADDRESS)
-    # TODO: Validate mac address, broadcast address, and other inputs
 
     sony_device = SonyDevice(user_input[CONF_HOST], DEFAULT_DEVICE_NAME,
                              broadcast_address=broadcast_address,
@@ -143,7 +174,9 @@ class SonyConfigFlow(ConfigFlow, domain=DOMAIN):
             info = await self.hass.async_add_executor_job(validate_input,
                                                           self.user_input)
 
-            if info.get("error") == AuthenticationResult.PIN_NEEDED:
+            error = info.get("error")
+
+            if error == AuthenticationResult.PIN_NEEDED:
                 errors["base"] = "invalid_auth"
 
                 return self.async_show_form(
@@ -151,6 +184,8 @@ class SonyConfigFlow(ConfigFlow, domain=DOMAIN):
                     data_schema=STEP_PIN_DATA_SCHEMA,
                     errors=errors,
                 )
+            elif error and isinstance(error, ValidationResult):
+                errors["base"] = error.value
         except CannotConnect:
             errors["base"] = "cannot_connect"
         except InvalidAuth:

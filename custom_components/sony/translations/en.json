@@ -4,6 +4,9 @@
       "already_configured": "Device is already configured"
     },
     "error": {
+      "invalid_host": "Invalid Host format",
+      "invalid_broadcast_address": "Invalid Broadcast Address format",
+      "invalid_mac_address": "Invalid MAC Address format",
       "cannot_connect": "Failed to connect",
       "invalid_auth": "Invalid authentication",
       "unknown": "Unexpected error"
