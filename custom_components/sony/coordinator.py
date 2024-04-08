@@ -6,8 +6,10 @@ from datetime import timedelta
 from typing import Any
 
 import requests
-from homeassistant.const import (STATE_OFF, STATE_ON,
-                                 STATE_PLAYING, STATE_PAUSED)
+from homeassistant.const import (
+    STATE_OFF, STATE_ON,
+    STATE_PLAYING, STATE_PAUSED
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)

@@ -16,7 +16,8 @@ from homeassistant.components.remote import (
     DEFAULT_DELAY_SECS,
     DEFAULT_NUM_REPEATS,
     RemoteEntity,
-    RemoteEntityFeature, ENTITY_ID_FORMAT)
+    RemoteEntityFeature, ENTITY_ID_FORMAT
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_OFF
 from homeassistant.core import HomeAssistant, callback
