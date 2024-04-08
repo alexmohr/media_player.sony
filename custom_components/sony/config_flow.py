@@ -27,7 +27,6 @@ _LOGGER = logging.getLogger(__name__)
 STEP_USER_DATA_SCHEMA = vol.Schema({
     vol.Optional(CONF_NAME): str,  # TODO: Use for device and remote name
     vol.Required(CONF_HOST): str,
-    vol.Optional(CONF_PIN, default=DEFAULT_PIN): str,
     vol.Optional(CONF_MAC_ADDRESS): str,
     vol.Optional(CONF_BROADCAST_ADDRESS,
                  default=DEFAULT_BROADCAST_ADDRESS): str,
@@ -36,6 +35,16 @@ STEP_USER_DATA_SCHEMA = vol.Schema({
     vol.Optional(CONF_IRCC_PORT, default=DEFAULT_IRCC_PORT): int,
     vol.Optional(CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL): int
 })
+
+# TODO: Move advanced stuff to this section
+# STEP_ADVANCED_DATA_SCHEMA = vol.Schema({
+#    vol.Optional(CONF_MAC_ADDRESS): str,
+#    vol.Optional(CONF_BROADCAST_ADDRESS,
+#                 default=DEFAULT_BROADCAST_ADDRESS): str,
+#    vol.Optional(CONF_APP_PORT, default=DEFAULT_APP_PORT): int,
+#    vol.Optional(CONF_DMR_PORT, default=DEFAULT_DMR_PORT): int,
+#    vol.Optional(CONF_IRCC_PORT, default=DEFAULT_IRCC_PORT): int,
+# })
 
 STEP_PIN_DATA_SCHEMA = vol.Schema({
     vol.Required(CONF_PIN, default=DEFAULT_PIN): str

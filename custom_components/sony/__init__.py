@@ -78,8 +78,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except Exception as ex:
         raise ConfigEntryNotReady(ex) from ex
 
-    # TODO: Not working
-    sony_device.friendly_name = entry.data.get(
+    friendly_name = entry.data.get(
         CONF_NAME,
         sony_device.friendly_name
     )
@@ -91,6 +90,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     _LOGGER.debug("Sony device initialization %s", vars(sony_device))
     coordinator = SonyCoordinator(hass, sony_device,
+                                  friendly_name=friendly_name,
                                   update_interval=update_interval)
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {

@@ -29,6 +29,7 @@ class SonyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     def __init__(
             self, hass: HomeAssistant,
             sony_device: SonyDevice,
+            friendly_name: str | None = None,
             update_interval: int = 5
     ) -> None:
         """Initialize the Coordinator."""
@@ -38,6 +39,8 @@ class SonyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             logger=_LOGGER,
             update_interval=timedelta(seconds=update_interval),
         )
+
+        self.friendly_name = friendly_name
 
         self.api = sony_device
         self.device_data = SonyDeviceData(self)
@@ -105,6 +108,11 @@ class SonyDeviceData:
                 await self.coordinator.hass.async_add_executor_job(
                     sony_device.init_device
                 )
+
+                if self.coordinator.friendly_name:
+                    sony_device.friendly_name = self.coordinator.friendly_name
+
+                    del self.coordinator.friendly_name
 
                 self._init = True
             else:
