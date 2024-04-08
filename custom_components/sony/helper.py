@@ -20,7 +20,7 @@ def create_device_info(device: SonyDevice, name: str) -> DeviceInfo:
         },
         name=name,
         manufacturer=device.manufacturer,
-        model=device.model_name
+        model=device.model_number or device.model_name
     )
 
 
