@@ -14,10 +14,12 @@
           "name": "Name",
           "host": "Host",
           "pin": "PIN code",
-          "broadcast": "Broadcast IP",
+          "mac_address": "MAC Address",
+          "broadcast_address": "Broadcast Address",
           "app_port" : "App port",
           "dmr_port" : "DMR port",
-          "ircc_port" : "IRCC port"
+          "ircc_port" : "IRCC port",
+          "update_interval": "Update Interval (s)"
         }
       },
       "zeroconf_confirm": {
